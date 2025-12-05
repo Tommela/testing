@@ -53,13 +53,7 @@ const BusinessCode = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   // Business category list state
-  const [businessCategoriesList, setBusinessCategoriesList] = useState<IBusinessCategoryOption[]>([
-    { value: 'Originator', label: 'Originator' },
-    { value: 'Knitting mills', label: 'Knitting mills' },
-    { value: 'Pretreatment Plant', label: 'Pretreatment Plant' },
-    { value: 'Dyehouse', label: 'Dyehouse' },
-    { value: 'Processing plants', label: 'Processing plants' }
-  ])
+  const [businessCategoriesList, setBusinessCategoriesList] = useState<IBusinessCategoryOption[]>([])
 
   // Form
   const formSchema = getBusinessCodeSchema(t)
@@ -101,18 +95,21 @@ const BusinessCode = () => {
 
     startLoading()
     try {
-      // Call the ref method to add/update the current form value to the list
-      if (settingBusinessCategoryRef.current) {
-        settingBusinessCategoryRef.current.addCurrentFormValueToList()
+      if (!settingBusinessCategoryRef.current) {
+        throw new Error('Business category setting is not ready.')
       }
 
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      await settingBusinessCategoryRef.current.addCurrentFormValueToList()
       stopLoading()
       toast.success(t(TRANSLATE_KEYS.MESSAGE, 'saveSuccessful'))
       // Don't close the dialog - allow user to continue editing
     } catch (error) {
       stopLoading()
-      toast.error(t(TRANSLATE_KEYS.MESSAGE, 'saveFailed'))
+      if (error instanceof Error && error.message) {
+        toast.error(error.message)
+      } else {
+        toast.error(t(TRANSLATE_KEYS.MESSAGE, 'saveFailed'))
+      }
     }
   }
 
