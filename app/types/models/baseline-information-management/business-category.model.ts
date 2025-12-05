@@ -13,7 +13,9 @@ export interface IBusinessCategoryCreatePayload {
 }
 
 export interface IBusinessCategoryUpdatePayload {
+  id: string
   name: string
+  user_id?: string
 }
 
 export interface IBusinessCategoryListResponse {
